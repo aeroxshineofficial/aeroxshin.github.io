@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /js/
+
+Sitemap: https://aeroget.github.io/sitemap.xml
