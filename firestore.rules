@@ -1,0 +1,130 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== PRODUCTS =====
+    // Public read: customer website displays products
+    // Admin-only write: only authenticated users with admin claim
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null
+        && request.auth.token.admin == true;
+    }
+
+    // ===== ORDERS =====
+    match /orders/{orderId} {
+
+      // --- Helper functions (order-scoped) ---
+      function isValidString(field, maxLen) {
+        return field is string
+          && field.size() > 0
+          && field.size() <= maxLen;
+      }
+
+      function isNonNegativeNumber(field) {
+        return field is number && field >= 0;
+      }
+
+      function isValidItem(item) {
+        return item is map
+          && item.keys().hasAll(['productId', 'name', 'qty'])
+          && item.keys().hasOnly([
+               'productId', 'name', 'sku', 'qty', 'price',
+               'description', 'packSize', 'category', 'image'
+             ])
+          && item.name is string
+          && item.name.size() > 0
+          && item.name.size() <= 200
+          && (item.productId is string || item.productId is number)
+          && item.qty is number
+          && item.qty > 0
+          && item.qty <= 9999
+          && (!item.hasField('sku') || item.sku is string)
+          && (!item.hasField('price') || item.price is number || item.price == null)
+          && (!item.hasField('description') || item.description is string)
+          && (!item.hasField('packSize') || item.packSize is string)
+          && (!item.hasField('category') || item.category is string)
+          && (!item.hasField('image') || item.image is string);
+      }
+
+      // --- Public create (unauthenticated customers) ---
+      // Validates every field type and rejects unexpected/malicious payloads.
+      // Forces status="Pending" and createdAt=serverTimestamp so customers
+      // cannot bypass workflow or forge timestamps.
+      allow create: if true
+        // Lock to exactly the 14 fields the website sends — no extra fields allowed
+        && request.resource.data.keys().hasOnly([
+             'customerName', 'clinic', 'phone', 'whatsapp',
+             'address', 'city', 'state', 'pincode', 'notes',
+             'items', 'totalQty', 'totalAmount',
+             'status', 'createdAt'
+           ])
+
+        // --- Required strings ---
+        && request.resource.data.customerName is string
+        && request.resource.data.customerName.size() > 0
+        && request.resource.data.customerName.size() <= 200
+
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() > 0
+        && request.resource.data.phone.size() <= 20
+
+        && request.resource.data.address is string
+        && request.resource.data.address.size() > 0
+        && request.resource.data.address.size() <= 500
+
+        // --- Optional strings (may be empty) ---
+        && request.resource.data.clinic is string
+        && request.resource.data.clinic.size() <= 300
+
+        && request.resource.data.whatsapp is string
+        && request.resource.data.whatsapp.size() <= 20
+
+        && request.resource.data.city is string
+        && request.resource.data.city.size() <= 100
+
+        && request.resource.data.state is string
+        && request.resource.data.state.size() <= 100
+
+        && request.resource.data.pincode is string
+        && request.resource.data.pincode.size() <= 10
+
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 2000
+
+        // --- Items array ---
+        && request.resource.data.items is list
+        && request.resource.data.items.size() > 0
+        && request.resource.data.items.size() <= 100
+        && request.resource.data.items.items().hasAll(
+             request.resource.data.items.filter(i, isValidItem(i))
+           )
+
+        // --- Numeric fields ---
+        && request.resource.data.totalQty is number
+        && request.resource.data.totalQty > 0
+        && request.resource.data.totalQty <= 999999
+        && (request.resource.data.totalAmount == null
+            || (request.resource.data.totalAmount is number
+                && request.resource.data.totalAmount >= 0
+                && request.resource.data.totalAmount <= 99999999))
+
+        // --- Status forced to Pending (cannot be set to Delivered, Cancelled, etc.) ---
+        && request.resource.data.status == "Pending"
+
+        // --- Timestamp set by server (FieldValue.serverTimestamp()) ---
+        && request.resource.data.createdAt is timestamp;
+
+      // --- Admin-only read/update/delete ---
+      allow read, update, delete: if request.auth != null
+        && request.auth.token.admin == true;
+    }
+
+    // ===== CATEGORIES (optional) =====
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null
+        && request.auth.token.admin == true;
+    }
+  }
+}

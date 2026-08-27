@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - AeroXshine</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       LOGIN VIEW
+       ============================================================ -->
+  <div class="login-page" id="login-view">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="assets/images/logo.png" alt="AeroXshine">
+        <h1>AeroXshine Admin</h1>
+      </div>
+      <h2>Sign in to your account</h2>
+      <div class="login-error" id="login-error"></div>
+      <div class="login-success" id="login-success"></div>
+      <form class="login-form" id="login-form">
+        <div class="form-group" id="lg-email-group">
+          <label for="lg-email">Email Address</label>
+          <input type="email" id="lg-email" placeholder="admin@aeroxshine.com" required autocomplete="email">
+          <div class="error-text">Please enter a valid email</div>
+        </div>
+        <div class="form-group" id="lg-pass-group">
+          <label for="lg-pass">Password</label>
+          <input type="password" id="lg-pass" placeholder="Enter your password" required autocomplete="current-password">
+          <div class="error-text">Password is required</div>
+        </div>
+        <div class="forgot-link">
+          <a href="#" id="forgot-password-link">Forgot Password?</a>
+        </div>
+        <button type="submit" class="login-btn" id="login-btn">Sign In</button>
+      </form>
+      <div class="forgot-link" style="text-align:center;margin-top:16px">
+        <a href="index.html" style="color:var(--admin-text-muted);font-size:.85rem">&larr; Back to Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN DASHBOARD VIEW
+       ============================================================ -->
+  <div class="admin-layout" id="admin-view">
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/images/logo.png" alt="AeroXshine">
+        <div>
+          <h2>AeroXshine</h2>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">Main</div>
+        <div class="sidebar-nav-item active" data-section="dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+        <div class="sidebar-nav-section">Management</div>
+        <div class="sidebar-nav-item" data-section="products">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Products
+        </div>
+        <div class="sidebar-nav-item" data-section="orders">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Orders
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logout-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-menu-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+        </div>
+        <div class="topbar-right">
+          <span class="topbar-user">Signed in as <strong id="admin-email">admin</strong></span>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+
+        <!-- ========== DASHBOARD SECTION ========== -->
+        <div id="section-dashboard" class="admin-section active">
+          <!-- Stats Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <div class="stat-card-icon blue">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="stat-total-products">0</div>
+              <div class="stat-card-label">Total Products</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <div class="stat-card-icon green">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="stat-active-products">0</div>
+              <div class="stat-card-label">Active Products</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <div class="stat-card-icon orange">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="stat-total-orders">0</div>
+              <div class="stat-card-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-header">
+                <div class="stat-card-icon red">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+              </div>
+              <div class="stat-card-value" id="stat-pending-orders">0</div>
+              <div class="stat-card-label">Pending Orders</div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Recent Orders -->
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Recent Orders</h2>
+                <button class="btn btn-sm btn-outline" onclick="App.switchSection('orders')">View All</button>
+              </div>
+              <div class="panel-body no-pad">
+                <ul class="recent-orders-list" id="recent-orders-list">
+                  <li class="empty-state" style="padding:32px"><p>No orders yet</p></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="panel">
+              <div class="panel-header">
+                <h2>Quick Actions</h2>
+              </div>
+              <div class="panel-body">
+                <div class="quick-actions">
+                  <button class="quick-action-btn" onclick="App.switchSection('products');setTimeout(function(){App.openProductModal()},100)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add New Product
+                  </button>
+                  <button class="quick-action-btn" onclick="App.switchSection('orders')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    View All Orders
+                  </button>
+                  <button class="quick-action-btn" onclick="App.switchSection('products')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                    Manage Products
+                  </button>
+                  <a href="index.html" target="_blank" class="quick-action-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    View Website
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== PRODUCTS SECTION ========== -->
+        <div id="section-products" class="admin-section" style="display:none">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Product Management</h2>
+              <button class="btn btn-primary btn-sm" onclick="App.openProductModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Product
+              </button>
+            </div>
+            <div class="filter-row">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="product-search" placeholder="Search products...">
+              </div>
+              <select class="filter-select" id="product-category-filter">
+                <option value="all">All Categories</option>
+              </select>
+              <select class="filter-select" id="product-status-filter">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="panel-body no-pad">
+              <div class="table-wrap">
+                <table class="admin-table" id="products-table">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-tbody"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="products-empty" style="display:none">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <h3>No products found</h3>
+                <p>Add your first product to get started.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== ORDERS SECTION ========== -->
+        <div id="section-orders" class="admin-section" style="display:none">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Order Management</h2>
+            </div>
+            <div class="filter-row">
+              <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="order-search" placeholder="Search by name, phone, order ID...">
+              </div>
+              <select class="filter-select" id="order-status-filter">
+                <option value="all">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <input type="date" class="filter-select" id="order-date-filter" title="Filter by date">
+            </div>
+            <div class="panel-body no-pad">
+              <div class="table-wrap">
+                <table class="admin-table" id="orders-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Phone</th>
+                      <th>Product(s)</th>
+                      <th>Amount</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-tbody"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="orders-empty" style="display:none">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <h3>No orders found</h3>
+                <p>Orders placed through the website will appear here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content-area -->
+    </div><!-- /main-content -->
+  </div><!-- /admin-view -->
+
+  <!-- ============================================================
+       PRODUCT MODAL (Add / Edit)
+       ============================================================ -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="product-modal-title">Add Product</h3>
+        <button class="modal-close" onclick="App.closeProductModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="product-form">
+          <input type="hidden" id="pf-id">
+          <div class="form-group" id="pf-name-group">
+            <label for="pf-name">Product Name *</label>
+            <input type="text" id="pf-name" placeholder="e.g. AeroXshine Toilet Cleaner" required>
+            <div class="error-text">Product name is required</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" id="pf-category-group">
+              <label for="pf-category">Category *</label>
+              <select id="pf-category" required>
+                <option value="">Select category</option>
+              </select>
+              <div class="error-text">Please select a category</div>
+            </div>
+            <div class="form-group">
+              <label for="pf-sku">SKU / Product ID</label>
+              <input type="text" id="pf-sku" placeholder="e.g. AX-TC-001">
+            </div>
+          </div>
+          <div class="form-group" id="pf-desc-group">
+            <label for="pf-description">Description *</label>
+            <textarea id="pf-description" rows="3" placeholder="Product description..." required></textarea>
+            <div class="error-text">Description is required</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pf-price">Price (&#8377;)</label>
+              <input type="number" id="pf-price" placeholder="0" min="0" step="0.01">
+              <div class="form-hint">Leave empty for "Price on request"</div>
+            </div>
+            <div class="form-group">
+              <label for="pf-discount-price">Discount Price (&#8377;)</label>
+              <input type="number" id="pf-discount-price" placeholder="0" min="0" step="0.01">
+              <div class="form-hint">Optional discounted price</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pf-pack-size">Pack Size</label>
+            <input type="text" id="pf-pack-size" placeholder="e.g. 500 ml, 1 L, 5 L">
+          </div>
+          <div class="form-group">
+            <label for="pf-image-url">Product Image URL / Path</label>
+            <input type="url" id="pf-image-url" placeholder="e.g. assets/products/toilet-cleaner.svg or https://example.com/image.jpg">
+            <div class="form-hint">Enter the image path from the repository (e.g. assets/products/my-product.png) or a full URL.</div>
+            <div id="image-preview-container" style="display:none;margin-top:12px;position:relative;display:inline-block">
+              <img id="image-preview" class="image-preview" src="" alt="Preview">
+              <button type="button" class="btn btn-xs btn-danger" style="position:absolute;top:8px;right:8px" onclick="App.removeImage()">Remove</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pf-features">Features (comma separated)</label>
+            <input type="text" id="pf-features" placeholder="e.g. Kills 99.9% Germs, Tough on Stains, Fresh Fragrance">
+            <div class="form-hint">Separate each feature with a comma</div>
+          </div>
+          <div class="form-group">
+            <div class="form-check">
+              <input type="checkbox" id="pf-available" checked>
+              <label for="pf-available">Product is active (available for sale)</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="App.closeProductModal()">Cancel</button>
+        <button class="btn btn-primary" id="product-save-btn" onclick="App.saveProduct()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Product
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CONFIRM MODAL (Delete Product / Generic Confirm)
+       ============================================================ -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-header">
+        <h3 id="confirm-modal-title">Confirm Action</h3>
+        <button class="modal-close" onclick="App.closeConfirmModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-dialog">
+          <div class="icon danger" id="confirm-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <h3 id="confirm-text">Are you sure?</h3>
+          <p id="confirm-subtext">This action cannot be undone.</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center">
+        <button class="btn btn-outline" onclick="App.closeConfirmModal()">Cancel</button>
+        <button class="btn btn-danger" id="confirm-action-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ORDER DETAIL MODAL
+       ============================================================ -->
+  <div class="modal-overlay" id="order-detail-modal">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-header">
+        <h3>Order Details</h3>
+        <button class="modal-close" onclick="document.getElementById('order-detail-modal').classList.remove('active')">&times;</button>
+      </div>
+      <div class="modal-body" id="order-detail-content"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       LOADING OVERLAY
+       ============================================================ -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Loading...</div>
+  </div>
+
+  <!-- ============================================================
+       TOAST CONTAINER
+       ============================================================ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Firebase Storage removed - images use GitHub-hosted URLs -->
+  <script src="firebase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
