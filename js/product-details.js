@@ -23,11 +23,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var featuresHtml = "";
     if (product.features && product.features.length > 0) {
-      featuresHtml = '<div class="features"><h3>Features</h3>';
-      product.features.forEach(function (f) {
-        featuresHtml += '<span class="feature-tag">' + f + '</span>';
-      });
-      featuresHtml += '</div>';
+      featuresHtml =
+        '<div class="product-detail-section">' +
+          '<h3>Key Features</h3>' +
+          '<ul class="product-detail-list">' +
+            product.features.map(function (f) { return '<li>' + f + '</li>'; }).join('') +
+          '</ul>' +
+        '</div>';
     }
 
     detail.innerHTML =
@@ -35,14 +37,16 @@ document.addEventListener("DOMContentLoaded", function () {
         '<img src="' + product.image + '" alt="' + product.name + '" onerror="this.style.display=\'none\'">' +
       '</div>' +
       '<div class="product-detail-info">' +
-        '<div class="category">' + product.category + '</div>' +
-        '<h1>' + product.name + '</h1>' +
-        '<div class="price">' + formatPrice(product.price) + '</div>' +
-        '<div class="pack-size">Pack Size: ' + product.packSize + '</div>' +
-        '<div class="availability" style="color:' + (product.available ? 'var(--success)' : 'var(--danger)') + '">' +
-          (product.available ? 'In Stock' : 'Out of Stock') +
+        '<div class="product-detail-meta">' +
+          '<span class="product-detail-category">' + product.category + '</span>' +
+          '<span class="product-detail-availability ' + (product.available ? 'in-stock' : 'out-of-stock') + '">' +
+            (product.available ? 'In Stock' : 'Out of Stock') +
+          '</span>' +
         '</div>' +
-        '<div class="description">' + product.description + '</div>' +
+        '<h1>' + product.name + '</h1>' +
+        '<div class="product-detail-price">' + formatPrice(product.price) + '</div>' +
+        '<div class="product-detail-packsize">Pack Size: ' + product.packSize + '</div>' +
+        '<div class="product-detail-description">' + product.description + '</div>' +
         featuresHtml +
         '<div class="product-detail-add">' +
           (product.available ?

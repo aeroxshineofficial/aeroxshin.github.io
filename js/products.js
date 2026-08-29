@@ -5,7 +5,7 @@ const products = [
     category: "Bathroom & Toilet Cleaning",
     packSize: "Add Pack Size",
     price: null,
-    image: "assets/products/toilet-cleaner.svg",
+    image: "assets/products/5.jpg",
     description: "Powerful toilet cleaner that removes tough stains and kills 99.9% germs. Leaves your bathroom clean, fresh and hygienic.",
     available: true,
     features: ["Kills 99.9% Germs", "Tough on Stains", "Fresh Fragrance"]
@@ -16,7 +16,7 @@ const products = [
     category: "Glass & Surface Cleaning",
     packSize: "Add Pack Size",
     price: null,
-    image: "assets/products/glass-cleaner.svg",
+    image: "assets/products/3.jpg",
     description: "Streak-free glass cleaner for windows, mirrors and glass surfaces. Provides a crystal-clear shine without residue.",
     available: true,
     features: ["Streak-Free Shine", "Quick Drying", "Ammonia Free"]
@@ -27,7 +27,7 @@ const products = [
     category: "Hand Hygiene",
     packSize: "Add Pack Size",
     price: null,
-    image: "assets/products/rose-handwash.svg",
+    image: "assets/products/1.jpg",
     description: "Gentle rose-scented handwash that effectively removes dirt and germs. Keeps hands soft, fresh and protected.",
     available: true,
     features: ["Rose Fragrance", "Kills Germs", "Skin Friendly"]
@@ -38,7 +38,7 @@ const products = [
     category: "Kitchen Cleaning",
     packSize: "Add Pack Size",
     price: null,
-    image: "assets/products/dishwash-liquid.svg",
+    image: "assets/products/4.jpg",
     description: "Concentrated dishwash liquid that cuts through tough grease and food stains. Safe for all types of utensils.",
     available: true,
     features: ["Tough on Grease", "Gentle on Hands", "Concentrated Formula"]
@@ -49,7 +49,7 @@ const products = [
     category: "Floor Cleaning",
     packSize: "Add Pack Size",
     price: null,
-    image: "assets/products/floor-cleaner.svg",
+    image: "assets/products/2.jpg",
     description: "Professional floor cleaning solution for all types of flooring. Removes dirt, germs and leaves a fresh fragrance.",
     available: true,
     features: ["Kills 99.9% Germs", "All Floor Types", "Long-Lasting Freshness"]
@@ -60,21 +60,10 @@ const products = [
     category: "Floor & Surface Disinfection",
     packSize: "Add Pack Size",
     price: null,
-    image: "assets/products/phenyl.svg",
+    image: "assets/products/6.jpg",
     description: "Traditional phenyl disinfectant for floors and surfaces. Provides powerful germ protection and a clean, fresh smell.",
     available: true,
     features: ["99.9% Germ Protection", "Disinfectant", "Classic Fragrance"]
-  },
-  {
-    id: 7,
-    name: "AeroXshine Fabric Wash",
-    category: "Laundry Care",
-    packSize: "Add Pack Size",
-    price: null,
-    image: "assets/products/fabric-wash.svg",
-    description: "Effective fabric wash for all types of clothing. Removes stains, dirt and odours while keeping fabrics soft and fresh.",
-    available: true,
-    features: ["Tough on Stains", "Gentle on Fabrics", "Fresh Scent"]
   }
 ];
 
@@ -84,8 +73,7 @@ const CATEGORIES = [
   "Hand Hygiene",
   "Kitchen Cleaning",
   "Floor Cleaning",
-  "Floor & Surface Disinfection",
-  "Laundry Care"
+  "Floor & Surface Disinfection"
 ];
 
 /* ===== FIRESTORE PRODUCT LOADING ===== */

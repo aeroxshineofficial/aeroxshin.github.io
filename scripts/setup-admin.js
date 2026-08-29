@@ -18,6 +18,35 @@
    ============================================================ */
 
 var path = require("path");
+var execSync = require("child_process").execSync;
+var fs = require("fs");
+
+// ── Step 0: Deploy Firestore rules first ──────────────────────
+var firebaseJsonPath = path.join(__dirname, "..", "firebase.json");
+var firestoreRulesPath = path.join(__dirname, "..", "firestore.rules");
+
+if (fs.existsSync(firebaseJsonPath) && fs.existsSync(firestoreRulesPath)) {
+  console.log("Step 0: Deploying Firestore rules...");
+  try {
+    execSync("firebase --version", { stdio: "ignore" });
+    try {
+      execSync("firebase deploy --only firestore:rules", {
+        cwd: path.join(__dirname, ".."),
+        stdio: "pipe"
+      });
+      console.log("  ✓ Firestore rules deployed successfully.\n");
+    } catch (e) {
+      console.log("  ⚠ Could not deploy Firestore rules automatically.");
+      console.log("  Run this manually: firebase deploy --only firestore:rules\n");
+    }
+  } catch (e) {
+    console.log("  ⚠ Firebase CLI not found. Deploy rules manually after setup:");
+    console.log("    npm install -g firebase-tools && firebase login");
+    console.log("    firebase deploy --only firestore:rules\n");
+  }
+} else {
+  console.log("Step 0: Skipping rules deployment (firebase.json or firestore.rules not found).\n");
+}
 
 // ── Step 1: Load service-account-key.json ──────────────────────
 var serviceAccount;

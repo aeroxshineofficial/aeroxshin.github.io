@@ -65,6 +65,8 @@
   }
 
   /* ---------- AUTH ---------- */
+  var currentUser = null;
+
   function initAuth() {
     if (!FirebaseServicesReady) {
       $("login-error").textContent = "Firebase is not configured. Please set up firebase-config.js.";
@@ -74,8 +76,10 @@
 
     auth.onAuthStateChanged(function (user) {
       if (user) {
+        currentUser = user;
         showAdminView(user);
       } else {
+        currentUser = null;
         showLoginView();
       }
     });
@@ -91,7 +95,7 @@
     $("login-view").style.display = "none";
     $("admin-email").textContent = user.email || "admin";
 
-    user.getIdTokenResult()
+    user.getIdTokenResult(true)
       .then(function(tokenResult) {
         if (tokenResult.claims.admin === true) {
           $("admin-view").classList.add("active");
@@ -99,7 +103,11 @@
         } else {
           $("login-view").style.display = "";
           $("admin-view").classList.remove("active");
-          $("login-error").textContent = "Access denied. Your account does not have admin privileges.";
+          $("login-error").innerHTML = "Access denied. Your account does not have admin privileges.<br><br>" +
+            "<strong>To fix this:</strong><br>" +
+            "1. Run: <code>node scripts/setup-admin.js set-claim " + user.uid + "</code><br>" +
+            "2. Sign out and sign back in.<br><br>" +
+            "<small style='color:var(--admin-text-muted)'>UID: " + user.uid + "</small>";
           $("login-error").style.display = "block";
           auth.signOut();
         }
@@ -222,7 +230,10 @@
             });
           })
           .catch(function (err2) {
-            console.error("Failed to load products:", err2.message);
+            console.error("Failed to load products:", err2.code, err2.message);
+            if (err2.code === "permission-denied") {
+              showToast("Cannot load products. Check your admin permissions.", "error");
+            }
             allProducts = [];
           });
       });
@@ -246,7 +257,10 @@
             });
           })
           .catch(function (err2) {
-            console.error("Failed to load orders:", err2.message);
+            console.error("Failed to load orders:", err2.code, err2.message);
+            if (err2.code === "permission-denied") {
+              showToast("Cannot load orders. Check your admin permissions.", "error");
+            }
             allOrders = [];
           });
       });
@@ -521,6 +535,36 @@
     if (!description) { $("pf-desc-group").classList.add("has-error"); valid = false; } else { $("pf-desc-group").classList.remove("has-error"); }
     if (!valid) return;
 
+    // ── Pre-save auth verification ──
+    if (!FirebaseServicesReady || !db) {
+      showToast("Firebase is not connected. Please refresh the page.", "error");
+      return;
+    }
+
+    if (!currentUser) {
+      showToast("Please log in as administrator to add products.", "error");
+      return;
+    }
+
+    // Force-refresh the ID token to get the latest custom claims
+    currentUser.getIdTokenResult(true)
+      .then(function (tokenResult) {
+        if (!tokenResult.claims.admin) {
+          showToast("Your account does not have admin privileges. Please contact the system administrator.", "error");
+          console.error("Auth: User", currentUser.uid, "does not have admin claim. Claims:", tokenResult.claims);
+          return null;
+        }
+
+        // Auth verified — proceed with save
+        return performProductSave(name, category, description);
+      })
+      .catch(function (err) {
+        console.error("Auth verification failed:", err);
+        showToast("Could not verify admin permissions. Please sign out and sign back in, then try again.", "error");
+      });
+  }
+
+  function performProductSave(name, category, description) {
     var featuresStr = $("pf-features").value.trim();
     var features = featuresStr ? featuresStr.split(",").map(function (f) { return f.trim(); }).filter(Boolean) : [];
 
@@ -550,7 +594,7 @@
       savePromise = db.collection("products").add(productData);
     }
 
-    savePromise
+    return savePromise
       .then(function () {
         hideLoading();
         closeProductModal();
@@ -563,8 +607,34 @@
       })
       .catch(function (err) {
         hideLoading();
-        console.error("Error saving product:", err);
-        showToast("Failed to save product: " + err.message, "error");
+        // Detailed error logging for debugging
+        console.error("=== PRODUCT SAVE FAILED ===");
+        console.error("Error code:", err.code || "N/A");
+        console.error("Error message:", err.message || err);
+        console.error("User UID:", currentUser ? currentUser.uid : "NOT LOGGED IN");
+        console.error("User email:", currentUser ? currentUser.email : "N/A");
+        console.error("Editing product ID:", editingProductId || "(new product)");
+        console.error("Firestore project:", firebaseConfig.projectId);
+
+        // User-friendly message based on error type
+        var userMsg = "Unable to save product. ";
+        if (err.code === "permission-denied") {
+          userMsg += "Permission denied. ";
+          if (!currentUser) {
+            userMsg += "You are not logged in. Please sign in as administrator.";
+          } else {
+            userMsg += "Your account may not have the required admin permissions. " +
+              "Please sign out, sign back in, and try again. " +
+              "If the problem persists, contact the system administrator to verify your admin access.";
+          }
+        } else if (err.code === "unauthenticated") {
+          userMsg += "You are not authenticated. Please sign in again.";
+        } else if (err.code === "unavailable") {
+          userMsg += "Firestore is temporarily unavailable. Please try again in a moment.";
+        } else {
+          userMsg += "An unexpected error occurred. Check the browser console for details.";
+        }
+        showToast(userMsg, "error");
       });
   }
 
@@ -579,6 +649,12 @@
     $("confirm-action-btn").textContent = "Delete";
     $("confirm-action-btn").className = "btn btn-danger";
     confirmCallback = function () {
+      // Verify auth before delete
+      if (!currentUser) {
+        showToast("Please log in as administrator to delete products.", "error");
+        closeConfirmModal();
+        return;
+      }
       showLoading("Deleting product...");
       db.collection("products").doc(productId).delete()
         .then(function () {
@@ -593,7 +669,12 @@
         })
         .catch(function (err) {
           hideLoading();
-          showToast("Delete failed: " + err.message, "error");
+          console.error("Product delete failed:", err.code, err.message);
+          if (err.code === "permission-denied") {
+            showToast("Permission denied. Please ensure you are signed in as administrator.", "error");
+          } else {
+            showToast("Delete failed: " + err.message, "error");
+          }
         });
     };
     $("confirm-modal").classList.add("active");
@@ -601,6 +682,11 @@
 
   /* ---------- ORDER OPERATIONS ---------- */
   function updateOrderStatus(orderId, newStatus) {
+    if (!currentUser) {
+      showToast("Please log in as administrator.", "error");
+      renderOrdersTable();
+      return;
+    }
     db.collection("orders").doc(orderId).update({ status: newStatus })
       .then(function () {
         showToast("Order status updated to " + newStatus, "success");
@@ -609,7 +695,8 @@
         renderDashboard();
       })
       .catch(function (err) {
-        showToast("Failed to update status", "error");
+        console.error("Order status update failed:", err.code, err.message);
+        showToast("Failed to update status. Please check your admin permissions.", "error");
         renderOrdersTable();
       });
   }
@@ -674,6 +761,11 @@
     $("confirm-action-btn").textContent = "Delete Order";
     $("confirm-action-btn").className = "btn btn-danger";
     confirmCallback = function () {
+      if (!currentUser) {
+        showToast("Please log in as administrator.", "error");
+        closeConfirmModal();
+        return;
+      }
       showLoading("Deleting order...");
       db.collection("orders").doc(orderId).delete()
         .then(function () {
@@ -688,7 +780,8 @@
         })
         .catch(function (err) {
           hideLoading();
-          showToast("Delete failed: " + err.message, "error");
+          console.error("Order delete failed:", err.code, err.message);
+          showToast("Delete failed. Please check your admin permissions.", "error");
         });
     };
     $("confirm-modal").classList.add("active");
@@ -832,6 +925,27 @@
 
     // Confirm modal
     $("confirm-action-btn").addEventListener("click", executeConfirm);
+
+    // Refresh permissions button
+    $("refresh-permissions-btn").addEventListener("click", function () {
+      if (!currentUser) {
+        showToast("Not signed in.", "error");
+        return;
+      }
+      showToast("Refreshing permissions...", "info");
+      currentUser.getIdTokenResult(true)
+        .then(function (tokenResult) {
+          if (tokenResult.claims.admin) {
+            showToast("Admin permissions verified. You have full access.", "success");
+          } else {
+            showToast("Your account does not have admin privileges. Run: node scripts/setup-admin.js set-claim " + currentUser.uid, "error");
+          }
+        })
+        .catch(function (err) {
+          console.error("Token refresh failed:", err);
+          showToast("Failed to refresh permissions. Please sign out and sign back in.", "error");
+        });
+    });
 
     // Close modals on overlay click
     $("product-modal").addEventListener("click", function (e) { if (e.target === this) closeProductModal(); });
