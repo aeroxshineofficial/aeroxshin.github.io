@@ -83,13 +83,13 @@ input,textarea,select{font-family:inherit;font-size:inherit}
 }
 
 /* ===== HERO SECTION ===== */
-.hero{position:relative;background:url('../assets/images/zyx.png') center center / 100% 100% no-repeat;color:#fff;padding:0;text-align:center;aspect-ratio:12/5;display:flex;align-items:center;justify-content:center}
+.hero{position:relative;background:url('../assets/images/xyz.png') center center / 100% 100% no-repeat;color:#fff;padding:0;text-align:center;aspect-ratio:12/5;display:flex;align-items:center;justify-content:center}
 .hero-overlay{display:none}
 .hero-inner{position:relative;z-index:2;max-width:800px;margin:0 auto}
 .hero-desc{font-size:1.05rem;opacity:.9;line-height:1.7;margin-bottom:32px;max-width:540px;margin-left:auto;margin-right:auto;text-shadow:0 1px 4px rgba(0,0,0,.3)}
 
-.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.hero-actions .btn{padding:14px 28px;font-size:1rem;border-radius:var(--radius);font-weight:600}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:60px}
+.hero-actions .btn{padding:18px 36px;font-size:1.1rem;border-radius:var(--radius);font-weight:700}
 .hero-actions .btn-primary{background:#fff;color:var(--primary)}
 .hero-actions .btn-primary:hover{background:var(--primary-light)}
 .hero-actions .btn-outline{border:2px solid rgba(255,255,255,.7);color:#fff;background:transparent}
