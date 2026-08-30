@@ -19,10 +19,34 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-overlay"></div>
-      <div class="container hero-inner">
-        <div class="hero-actions">
-          <a href="products.html" class="btn btn-primary">Explore Products</a>
-          <a href="contact.html" class="btn btn-outline">Contact Us</a>
+      <div class="container hero-inner"></div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-grid">
+          <a href="products.html" class="cta-card cta-products">
+            <div class="cta-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            </div>
+            <span class="cta-label">Explore Products</span>
+            <span class="cta-sub">Browse our full range</span>
+          </a>
+          <a href="https://wa.me/917004104042" target="_blank" rel="noopener noreferrer" class="cta-card cta-whatsapp">
+            <div class="cta-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
+            </div>
+            <span class="cta-label">Contact Us</span>
+            <span class="cta-sub">Chat on WhatsApp</span>
+          </a>
+          <a href="tel:+917004104042" class="cta-card cta-call">
+            <div class="cta-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <span class="cta-label">Call Now</span>
+            <span class="cta-sub">7004104042</span>
+          </a>
         </div>
       </div>
     </section>
@@ -98,6 +122,16 @@
   <script src="js/app.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
+      function buildSizeSelector(p) {
+        if (!p.sizes || p.sizes.length === 0) return "";
+        var html = '<div class="size-selector" onclick="event.preventDefault();event.stopPropagation()">';
+        p.sizes.forEach(function(s, i) {
+          html += '<button type="button" class="size-option' + (i === 0 ? ' active' : '') + '" data-size="' + s + '" onclick="event.preventDefault();event.stopPropagation();selectSize(this)">' + s + '</button>';
+        });
+        html += '</div>';
+        return html;
+      }
+
       function renderFeatured() {
         var featuredGrid = document.getElementById("featured-products");
         featuredGrid.innerHTML = "";
@@ -123,6 +157,7 @@
               '<div class="showcase-card-features">' +
                 limitedFeatures.map(function(f) { return '<span class="feature-chip">' + f + '</span>'; }).join('') +
               '</div>' +
+              buildSizeSelector(p) +
               '<div class="showcase-card-actions">' +
                 (p.available ?
                   '<div class="quantity-control-modern" onclick="event.preventDefault()">' +
@@ -147,6 +182,12 @@
       document.addEventListener("productsLoaded", renderFeatured);
     });
 
+    function selectSize(btn) {
+      var container = btn.closest('.size-selector');
+      container.querySelectorAll('.size-option').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+
     function changeQty(btn, delta) {
       var input = btn.parentElement.querySelector("input");
       var val = parseInt(input.value) || 1;
@@ -157,7 +198,13 @@
     function addFeaturedToCart(productId, btn) {
       var container = btn.closest(".showcase-card-actions");
       var qty = parseInt(container.querySelector("input").value) || 1;
-      addToCart(productId, qty);
+      var sizeSelector = btn.closest(".showcase-card-inner").querySelector(".size-selector");
+      var selectedSize = "";
+      if (sizeSelector) {
+        var activeBtn = sizeSelector.querySelector(".size-option.active");
+        if (activeBtn) selectedSize = activeBtn.getAttribute("data-size");
+      }
+      addToCart(productId, qty, selectedSize);
     }
   </script>
 </body>

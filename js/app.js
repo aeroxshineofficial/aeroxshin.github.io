@@ -34,30 +34,37 @@ function saveCart(cart) {
   updateCartBadge();
 }
 
-function addToCart(productId, qty) {
+function cartItemKey(item) {
+  return item.id + "|||" + (item.size || "");
+}
+
+function addToCart(productId, qty, size) {
   const cart = getCart();
-  const existing = cart.find(item => item.id === productId);
+  const key = productId + "|||" + (size || "");
+  const existing = cart.find(item => cartItemKey(item) === key);
   if (existing) {
     existing.qty += qty;
   } else {
-    cart.push({ id: productId, qty: qty });
+    cart.push({ id: productId, qty: qty, size: size || "" });
   }
   saveCart(cart);
   showToast("Product added to order");
 }
 
-function updateCartQty(productId, qty) {
+function updateCartQty(productId, qty, size) {
   const cart = getCart();
-  const item = cart.find(i => i.id === productId);
+  const key = productId + "|||" + (size || "");
+  const item = cart.find(i => cartItemKey(i) === key);
   if (item) {
     item.qty = Math.max(1, qty);
     saveCart(cart);
   }
 }
 
-function removeFromCart(productId) {
+function removeFromCart(productId, size) {
   let cart = getCart();
-  cart = cart.filter(i => i.id !== productId);
+  const key = productId + "|||" + (size || "");
+  cart = cart.filter(i => cartItemKey(i) !== key);
   saveCart(cart);
 }
 

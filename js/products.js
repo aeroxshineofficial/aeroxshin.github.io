@@ -3,67 +3,73 @@ const products = [
     id: 1,
     name: "AeroXshine Toilet Cleaner",
     category: "Bathroom & Toilet Cleaning",
-    packSize: "Add Pack Size",
+    packSize: "500ml / 750ml",
     price: null,
     image: "assets/products/5.jpg",
     description: "Powerful toilet cleaner that removes tough stains and kills 99.9% germs. Leaves your bathroom clean, fresh and hygienic.",
     available: true,
-    features: ["Kills 99.9% Germs", "Tough on Stains", "Fresh Fragrance"]
+    features: ["Kills 99.9% Germs", "Tough on Stains", "Fresh Fragrance"],
+    sizes: ["500ml", "750ml"]
   },
   {
     id: 2,
     name: "AeroXshine Glass Cleaner",
     category: "Glass & Surface Cleaning",
-    packSize: "Add Pack Size",
+    packSize: "500ml",
     price: null,
     image: "assets/products/3.jpg",
     description: "Streak-free glass cleaner for windows, mirrors and glass surfaces. Provides a crystal-clear shine without residue.",
     available: true,
-    features: ["Streak-Free Shine", "Quick Drying", "Ammonia Free"]
+    features: ["Streak-Free Shine", "Quick Drying", "Ammonia Free"],
+    sizes: ["500ml"]
   },
   {
     id: 3,
     name: "AeroXshine Rose Handwash",
     category: "Hand Hygiene",
-    packSize: "Add Pack Size",
+    packSize: "250ml / 500ml",
     price: null,
     image: "assets/products/1.jpg",
     description: "Gentle rose-scented handwash that effectively removes dirt and germs. Keeps hands soft, fresh and protected.",
     available: true,
-    features: ["Rose Fragrance", "Kills Germs", "Skin Friendly"]
+    features: ["Rose Fragrance", "Kills Germs", "Skin Friendly"],
+    sizes: ["250ml", "500ml"]
   },
   {
     id: 4,
     name: "AeroXshine Dishwash Liquid",
     category: "Kitchen Cleaning",
-    packSize: "Add Pack Size",
+    packSize: "250ml",
     price: null,
     image: "assets/products/4.jpg",
     description: "Concentrated dishwash liquid that cuts through tough grease and food stains. Safe for all types of utensils.",
     available: true,
-    features: ["Tough on Grease", "Gentle on Hands", "Concentrated Formula"]
+    features: ["Tough on Grease", "Gentle on Hands", "Concentrated Formula"],
+    sizes: ["250ml"]
   },
   {
     id: 5,
     name: "AeroXshine Floor Cleaner",
     category: "Floor Cleaning",
-    packSize: "Add Pack Size",
+    packSize: "500ml",
     price: null,
     image: "assets/products/2.jpg",
     description: "Professional floor cleaning solution for all types of flooring. Removes dirt, germs and leaves a fresh fragrance.",
     available: true,
-    features: ["Kills 99.9% Germs", "All Floor Types", "Long-Lasting Freshness"]
+    features: ["Kills 99.9% Germs", "All Floor Types", "Long-Lasting Freshness"],
+    sizes: ["500ml"]
   },
   {
     id: 6,
     name: "AeroXshine Phenyl",
     category: "Floor & Surface Disinfection",
-    packSize: "Add Pack Size",
+    packSize: "500ml / 1L",
     price: null,
     image: "assets/products/6.jpg",
     description: "Traditional phenyl disinfectant for floors and surfaces. Provides powerful germ protection and a clean, fresh smell.",
     available: true,
-    features: ["99.9% Germ Protection", "Disinfectant", "Classic Fragrance"]
+    features: ["99.9% Germ Protection", "Disinfectant", "Classic Fragrance"],
+    sizes: ["500ml", "1L"]
   },
   {
     id: 7,
@@ -156,7 +162,8 @@ function loadProductsFromFirestore() {
           description: d.description || "",
           available: d.available !== false,
           features: d.features || [],
-          sku: d.sku || ""
+          sku: d.sku || "",
+          sizes: d.sizes || []
         });
       });
       if (firestoreProducts.length > 0) {

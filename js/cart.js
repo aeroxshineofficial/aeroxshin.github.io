@@ -27,22 +27,25 @@ function renderCart() {
     var subtotal = product.price ? product.price * item.qty : null;
     if (subtotal) { totalPrice += subtotal; hasPrice = true; }
     totalQty += item.qty;
+    var sizeLabel = item.size || "";
+    var metaText = sizeLabel ? sizeLabel : product.packSize;
+    if (product.price) metaText += " \u00b7 " + formatPrice(product.price) + " each";
 
     itemsHtml +=
-      '<div class="cart-item" id="cart-item-' + product.id + '">' +
+      '<div class="cart-item" id="cart-item-' + product.id + '-' + (sizeLabel || 'default') + '">' +
         '<div class="cart-item-image">' +
           '<img src="' + product.image + '" alt="' + product.name + '" onerror="this.style.display=\'none\'">' +
         '</div>' +
         '<div class="cart-item-details">' +
-          '<div class="cart-item-name">' + product.name + '</div>' +
-          '<div class="cart-item-meta">' + product.packSize + (product.price ? ' &middot; ' + formatPrice(product.price) + ' each' : '') + '</div>' +
+          '<div class="cart-item-name">' + product.name + (sizeLabel ? ' (' + sizeLabel + ')' : '') + '</div>' +
+          '<div class="cart-item-meta">' + metaText + '</div>' +
           '<div class="cart-item-actions">' +
             '<div class="quantity-control">' +
-              '<button type="button" onclick="updateCartItem(' + product.id + ',-1)" aria-label="Decrease quantity">-</button>' +
-              '<input type="number" value="' + item.qty + '" min="1" max="999" onchange="setCartItemQty(' + product.id + ',this.value)" aria-label="Quantity">' +
-              '<button type="button" onclick="updateCartItem(' + product.id + ',1)" aria-label="Increase quantity">+</button>' +
+              '<button type="button" onclick="updateCartItem(' + product.id + ',-1,\'' + (sizeLabel || '') + '\')" aria-label="Decrease quantity">-</button>' +
+              '<input type="number" value="' + item.qty + '" min="1" max="999" onchange="setCartItemQty(' + product.id + ',this.value,\'' + (sizeLabel || '') + '\')" aria-label="Quantity">' +
+              '<button type="button" onclick="updateCartItem(' + product.id + ',1,\'' + (sizeLabel || '') + '\')" aria-label="Increase quantity">+</button>' +
             '</div>' +
-            '<button class="cart-item-remove" onclick="removeCartItem(' + product.id + ')">Remove</button>' +
+            '<button class="cart-item-remove" onclick="removeCartItem(' + product.id + ',\'' + (sizeLabel || '') + '\')">Remove</button>' +
             (subtotal ? '<span class="cart-item-subtotal">' + formatPrice(subtotal) + '</span>' : '') +
           '</div>' +
         '</div>' +
@@ -129,29 +132,30 @@ function renderCart() {
     '</div>';
 }
 
-function updateCartItem(productId, delta) {
+function updateCartItem(productId, delta, size) {
   var cart = getCart();
-  var item = cart.find(function (i) { return i.id === productId; });
+  var key = productId + "|||" + (size || "");
+  var item = cart.find(function (i) { return cartItemKey(i) === key; });
   if (item) {
     var newQty = item.qty + delta;
     if (newQty < 1) {
-      removeFromCart(productId);
+      removeFromCart(productId, size);
     } else {
-      updateCartQty(productId, newQty);
+      updateCartQty(productId, newQty, size);
     }
     renderCart();
   }
 }
 
-function setCartItemQty(productId, val) {
+function setCartItemQty(productId, val, size) {
   var qty = parseInt(val) || 1;
   qty = Math.max(1, qty);
-  updateCartQty(productId, qty);
+  updateCartQty(productId, qty, size);
   renderCart();
 }
 
-function removeCartItem(productId) {
-  removeFromCart(productId);
+function removeCartItem(productId, size) {
+  removeFromCart(productId, size);
   renderCart();
   showToast("Product removed from order");
 }
@@ -222,10 +226,12 @@ function sendWhatsAppOrder() {
     var subtotal = product.price ? product.price * item.qty : null;
     if (subtotal) { totalPrice += subtotal; hasPrice = true; }
     totalQty += item.qty;
+    var sizeLabel = item.size || "";
 
     productLines += (index + 1) + ". " + product.name + "\n";
+    if (sizeLabel) productLines += "   Size: " + sizeLabel + "\n";
     productLines += "   Quantity: " + item.qty + "\n";
-    productLines += "   Pack Size: " + product.packSize + "\n";
+    productLines += "   Pack Size: " + (sizeLabel || product.packSize) + "\n";
     if (product.price) {
       productLines += "   Price: " + formatPrice(product.price) + "\n";
       productLines += "   Subtotal: " + formatPrice(subtotal) + "\n";
@@ -268,7 +274,8 @@ function sendWhatsAppOrder() {
       name: product.name,
       sku: product.sku || "",
       qty: item.qty,
-      price: product.price || null
+      price: product.price || null,
+      size: item.size || ""
     };
   }).filter(Boolean);
 

@@ -32,6 +32,19 @@ document.addEventListener("DOMContentLoaded", function () {
         '</div>';
     }
 
+    var sizeHtml = "";
+    if (product.sizes && product.sizes.length > 0) {
+      sizeHtml =
+        '<div class="product-detail-section">' +
+          '<h3>Select Size</h3>' +
+          '<div class="size-selector size-selector-detail">' +
+            product.sizes.map(function (s, i) {
+              return '<button type="button" class="size-option' + (i === 0 ? ' active' : '') + '" data-size="' + s + '" onclick="selectDetailSize(this)">' + s + '</button>';
+            }).join('') +
+          '</div>' +
+        '</div>';
+    }
+
     detail.innerHTML =
       '<div class="product-detail-image">' +
         '<img src="' + product.image + '" alt="' + product.name + '" onerror="this.style.display=\'none\'">' +
@@ -48,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         '<div class="product-detail-packsize">Pack Size: ' + product.packSize + '</div>' +
         '<div class="product-detail-description">' + product.description + '</div>' +
         featuresHtml +
+        sizeHtml +
         '<div class="product-detail-add">' +
           (product.available ?
             '<div class="quantity-control">' +
@@ -71,6 +85,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+function selectDetailSize(btn) {
+  var container = btn.closest('.size-selector');
+  container.querySelectorAll('.size-option').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
 function changeDetailQty(delta) {
   var input = document.getElementById("detail-qty");
   if (!input) return;
@@ -82,5 +102,11 @@ function changeDetailQty(delta) {
 function addDetailToCart(productId) {
   var input = document.getElementById("detail-qty");
   var qty = parseInt(input.value) || 1;
-  addToCart(productId, qty);
+  var sizeSelector = document.querySelector(".size-selector-detail");
+  var selectedSize = "";
+  if (sizeSelector) {
+    var activeBtn = sizeSelector.querySelector(".size-option.active");
+    if (activeBtn) selectedSize = activeBtn.getAttribute("data-size");
+  }
+  addToCart(productId, qty, selectedSize);
 }

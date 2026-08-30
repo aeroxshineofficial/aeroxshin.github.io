@@ -20,6 +20,16 @@ document.addEventListener("DOMContentLoaded", function () {
     categoryFilter.value = preselectedCategory;
   }
 
+  function buildSizeSelector(p) {
+    if (!p.sizes || p.sizes.length === 0) return "";
+    var html = '<div class="size-selector" onclick="event.preventDefault();event.stopPropagation()">';
+    p.sizes.forEach(function(s, i) {
+      html += '<button type="button" class="size-option' + (i === 0 ? ' active' : '') + '" data-size="' + s + '" onclick="event.preventDefault();event.stopPropagation();selectSize(this)">' + s + '</button>';
+    });
+    html += '</div>';
+    return html;
+  }
+
   function renderProducts() {
     var query = searchInput.value;
     var category = categoryFilter.value;
@@ -57,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
               '<div class="showcase-card-features">' +
                 limitedFeatures.map(function(f) { return '<span class="feature-chip">' + f + '</span>'; }).join('') +
               '</div>' +
+              buildSizeSelector(p) +
               '<div class="showcase-card-actions">' +
                 (p.available ?
                   '<div class="quantity-control-modern" onclick="event.preventDefault()">' +
@@ -88,6 +99,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+function selectSize(btn) {
+  var container = btn.closest('.size-selector');
+  container.querySelectorAll('.size-option').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
 function changeQty(btn, delta) {
   var input = btn.parentElement.querySelector("input");
   var val = parseInt(input.value) || 1;
@@ -98,5 +115,11 @@ function changeQty(btn, delta) {
 function addProductToCart(productId, btn) {
   var container = btn.closest(".showcase-card-actions");
   var qty = parseInt(container.querySelector("input").value) || 1;
-  addToCart(productId, qty);
+  var sizeSelector = btn.closest(".showcase-card-inner").querySelector(".size-selector");
+  var selectedSize = "";
+  if (sizeSelector) {
+    var activeBtn = sizeSelector.querySelector(".size-option.active");
+    if (activeBtn) selectedSize = activeBtn.getAttribute("data-size");
+  }
+  addToCart(productId, qty, selectedSize);
 }
